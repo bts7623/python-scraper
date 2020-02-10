@@ -18,6 +18,10 @@ python start
 
 #### 2020.02.06: #1-4 ~ #1-9
 
+#### 2020.02.08: #1-10 ~ #1-12
+
+#### 2020.02.09: #1-13 ~ #2-3
+
 # Concept
 
 #### #0-0 ~ 0-4 Introduction
@@ -155,3 +159,169 @@ python start
   - f"{parm1} < {parm2} < {parm3}"
 
 #### #1-9 Code Challenge!
+
+#### #1-10 Conditionals part One
+
+- if, else
+  - Condition을 조건이라고 하나봄
+  - if CONDITION: elif: else:
+    - 위 처럼 조건에 콜론(:)을 쓰고 들여쓰기로 조건에 대한 실행 로직을 넣으면 됨
+    - type을 체크할 때 'is'라는 비교문을 쓸 수 있다.
+      - if type(b) is int
+      - if type(b) is int or type(b) is float:
+- 참고 링크
+  - [Built-in Types](https://docs.python.org/3.7/library/stdtypes.html#truth-value-testing)
+
+#### #1-11 if else and or
+
+- Boolean Operation: and or not
+- if CONDITION: elif CONDITION: else: 사용법
+- is, is not, not, and, or
+
+  ```python
+    def age_check(age):
+      print(f"you are {age}")
+      if age < 18:
+        print("you can't drink")
+      elif age == 18:
+        print("you are new to this!")
+      else:
+        print("enjoy your drink")
+
+    age_check(18)
+  ```
+
+#### #1-12 for in
+
+- for 변수명 in Sequence:
+
+  - Sequence는 list, tuple 같은 다수의 데이터를 저장하고 있는 배열형 데이터
+  - 이렇게 하고 변수명에는 아무거나 넣어줌
+  - 순차적으로 Sequence 내부 데이터를 변수에 저장해서 순차적으로 뽑아 슬 수 있다.
+  - break 로 반복문 종료 가능
+
+  ```python
+    days = ("Mon", "Tue", "Wed")
+    for day in days:
+      print(day)
+
+    #Mon, Tue, Wed 출력
+  ```
+
+  - 흠 조건문에 type 측정에만 is를 쓰는줄 알았는데 단순 비교에도 is를 많이 쓰는듯
+    - if day is "Wed": 등에 사용됨
+
+- The for statement is used to iterate over the elements of a sequence (such as a string, tuple or list) or other iterable object:
+
+  - 배열을 순차적으로 뽑아준다는 뜻.
+  - str (String)로 배열이다.
+
+- 참고 링크
+  - [The for statement](https://docs.python.org/3.7/reference/compound_stmts.html#the-for-statement)
+
+#### #1-13 Modules
+
+- 기능의 집합같은 느낌. import해서 사용할 수 있음
+- 다른 사람이 만든 모듈도 다운받아 import를 통해 쓸 수 있음
+- 굉장히 다양한 모듈이 제공되고 있다.
+- math
+
+  - ceil 반올림, fabs 절대값
+
+  ```python
+    import math
+
+    print(math.ceil(1.2))
+    print(math.fabs(1.2))
+  ```
+
+  - math를 다 가져오는 것은 비효율적이기 때문에 필요한 것들만 가져올 수 있음
+
+  ```python
+    from math import ceil, fsum
+
+    print(ceil(1.2))
+    print(fsum([1, 2, 3, 4, 5, 6, 7]))
+  ```
+
+  - import하는 모듈의 이름도 재정의 해줄 수 있음
+    - from math import ceil as my_ceil
+
+- 파이썬 파일을 하나 생성해서 그 안에 선언하는 함수들을 모듈처럼 갖다 쓸 수 있음
+  - test.py파일에 print_name(name)이라는 함수를 정의한 뒤 main.py 에서 import해서 쓸 수 있음
+    - 이 때 from test import print_name 이렇게 .py 확장자와 함수 매개변수를 안써줘도 됨
+- print() 함수는 인자를 무제한으로 받을 수 있다. 이것에 대해는 추후 강의한다.ㅌ
+- 참고 링크
+  - [Module Math](https://docs.python.org/3/library/math.html#module-math)
+
+---
+
+#### #2 Building a Job Scrapper
+
+#### #2-0 What is Web Scrapping
+
+- 웹사이트에서 필요한 정보만 추출하는 작업
+  - 웹 url을 SNS에 공유 시 해당 웹페이지의 메인 사진과 제목을 가져오는 것과 같은 것
+  - 여러 쇼핑몰 가격정보를 가져와 비교하는 것
+- web mining, data mining 이라고도 불림 (mine, mining = 채굴)
+
+#### #2-1 What are We Building
+
+- 대형 구직 사이트인 Indeed, Stack Over Flow에서 python 개발자 공고글을 긁어 올 것임
+- 페이지를 이동하면서 모든 데이터를 긁어오고 긁어온 데이터를 엑셀에 옮긴거임
+
+#### #2-2 Navigating with Python
+
+- python 내부 모듈도 훌륭하지만 외부 모듈을 통해 스크래핑을 효과적으로 더 강력하게 할 수 있다.
+- repl.it 좌측 packages 버튼 클릭
+  - requests 검색 > pyyhon HTTP for Humans. 패키지 클릭 > 추가
+- url 모듈보다 request 모듈이 더 좋음. request는 python request들을 모아놓은 것
+  - requests 모듈에대해 필요 시 검색해보는 것도 좋을듯
+- import requests 하고 requests.get("URL")을 변수에 저장
+  - text, header, json 등을 가져올 수 있다.
+  - .text > html 전부를 가져온다
+- beautiful soup library를 이용해서 html 정보를 효과적으로 추출한다.
+  - package에서 beatifulsoup4 (다 붙여서 풀로 검색해야됨) 검색해서 추가
+    - Screen-scraping library
+- 참고 링크
+  - [Requests 모듈](https://2.python-requests.org/en/master/)
+  - [Requests 모듈 Github](https://github.com/psf/requests)
+  - [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/)
+  - [Beauriful Soup Doc](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+
+#### #2-3 Extracting Indeed Pages
+
+- extracting : 추출
+- a tag는 anchor(앵커)라 하나봄
+- indeed 페이지 정보 추출하기
+  - div.pagination에 페이징 정보가 들어있음
+  - div 안에 a tag를 추출하고 거기에 span에 있는 숫자를 가져온다
+  - span 마지막에는 Next(다음) 이라는 데이터가 있기 때문에 마지막 줄을 빼고 배열에 담아준다.
+- 배열 spans = []
+
+  - spans.append()로 데이터를 추가해준다
+  - spans[0:5] 라고 하면 0부터 5번까지 데이터를 보여준다.
+  - spans[0:-1], spans[:-1]라고 하면 마지막에서 첫번째 항을 제외하고 보여준다.
+  - spans[-1] 이라고 하면 마지막에서 첫번째 항을 보여준다.
+  - 마지막 항은 필요가 없으므로 spans = spans[:-1] 로 저장한다.
+
+  ```python
+    import requests
+    from bs4 import BeautifulSoup
+
+    indeed_resul = requests.get("https://kr.indeed.com/%EC%B7%A8%EC%97%85?q=python&l=%ED%8C%90%EA%B5%90&limit=50")
+    indeed_soup = BeautifulSoup(indeed_resul.text, "html.parser")
+
+    pagination = indeed_soup.find("div", {"class":"pagination"})
+
+    pages = pagination.find_all("a")
+    spans = []
+    for page in pages:
+      spans.append(page.find("span"))
+
+    spans = spans[:-1]
+
+    print(spans)
+  ```
+
+#### #2-4 Extracting Indeed Pages part Two
