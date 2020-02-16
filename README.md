@@ -22,6 +22,8 @@ python start
 
 #### 2020.02.09: #1-13 ~ #2-3
 
+#### 2020.02.16: #2-4
+
 # Concept
 
 #### #0-0 ~ 0-4 Introduction
@@ -325,3 +327,30 @@ python start
   ```
 
 #### #2-4 Extracting Indeed Pages part Two
+- 복습
+  - requests import
+    - resul = requests.get("URL"): 해당 URL 페이지의 정보를 담는다.
+    - resul.text: 해당 페이지의 text를 담는다.
+  - beatifulSoup import 
+    - soup = BeautifulSoup(resul.text, "html.parser"): 해당 페이지 텍스트 정보에서 html 데이터를 효과적으로 불러올 수 있도록 담는다.
+    - soup.find, find_all 등으로 html 데이터를 효과적으로 가져와 뿌린다.
+  - 현재 Indeed 페이지의 페이지 넘버를 불러왔다.
+- 목표
+  - 페이지 번호만 뽑아서 숫자로바꾸고 최대 값을 뽑아 변수에 저장한다.
+- page.find("span").string
+  - span tag에서 String만 가져옴 > 페이지 번호만 가져옴
+  - 해당 tag 안에 String이 단 하나만 있을 경우 .string을 통해 뽑아낼 수 있음
+  - 이 때 string은 value 값 같음. 화면에 표출되는 text 느낌
+- 반복문 반복 횟수 설정
+  - for page in links: 구문에서 links[a:b]: 로 적어주면 a항부터 ~ b항까지 반복할 수 있음
+    - for page in links[:-1]: > 첫 항 부터 마지막 항 빼고 반복
+- 뽑아낸 페이지 번호를 int(page)로 형 변환한다.
+- max_val = max(pages)로 페이지 최대값을 저장
+- 헷갈리는 부분
+  - list[-1]이 마지막항이고, list[:-1]이 마지막 항을 제외 한 값인 이유
+    - list[-1]은 결국 list[len(list)-1] 값이 라는 것이다.
+    - 6개의 항을 갖고 있을 경우 len(list)는 6이고, -1은 5이다.
+    - 따라서 list[-1] = list[5]로 마지막 항을 가리킨다.
+    - 마찬가지로 list[:-1] = list[0:5]라는 뜻이니까.. int i=0, i<5, i++ 느낌으로 되는건가?
+
+#### #2-5
