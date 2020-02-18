@@ -24,6 +24,8 @@ python start
 
 #### 2020.02.16: #2-4
 
+#### 2020.02.19: #2-5
+
 # Concept
 
 #### #0-0 ~ 0-4 Introduction
@@ -327,11 +329,12 @@ python start
   ```
 
 #### #2-4 Extracting Indeed Pages part Two
+
 - 복습
   - requests import
     - resul = requests.get("URL"): 해당 URL 페이지의 정보를 담는다.
     - resul.text: 해당 페이지의 text를 담는다.
-  - beatifulSoup import 
+  - beatifulSoup import
     - soup = BeautifulSoup(resul.text, "html.parser"): 해당 페이지 텍스트 정보에서 html 데이터를 효과적으로 불러올 수 있도록 담는다.
     - soup.find, find_all 등으로 html 데이터를 효과적으로 가져와 뿌린다.
   - 현재 Indeed 페이지의 페이지 넘버를 불러왔다.
@@ -353,4 +356,27 @@ python start
     - 따라서 list[-1] = list[5]로 마지막 항을 가리킨다.
     - 마찬가지로 list[:-1] = list[0:5]라는 뜻이니까.. int i=0, i<5, i++ 느낌으로 되는건가?
 
-#### #2-5
+#### #2-5 Requesting Each Page
+
+- 목표
+  - 페이지 수 만큼 Request를 만듦
+  - extract_indeed_pages() function 만들기
+  - extract_indeed_job(last_page) function 만들기
+- range(n) 크기가 n인 배열을 생성해주는 함수 활용
+  - print(range(n)) 하면 range(0, n)일 출력
+  - for output in range(n): 해서 output을 출력하면 0~n-1까지 출력됨
+- indeed.py 페이지를 만들어서 기존 requests, beatifulsoup 작업들을 function으로 만들어준다.
+  - extract_indeed_pages()
+    - 기존 마지막 페이지를 return해주는 function
+    - URL, LIMIT를 변수에 담아 동적으로 활용가능 하도록 진행
+  - extract_indeed_job(last_page)
+    - extract_indeed_pages()에서 last_page를 받아 매개변수로 넣음
+    - 페이지 수만큼 range(last_page)를 만들어 for문으로 돌려줌
+    ```python
+      for page in range(last_page):
+        result = requests.get(f"{URL}&start={page*LIMIT}") #페이지별 URL을 request하여 페이지별 데이터를 가져온다.
+        print(result.status_code) #페이지별 request가 정상 작동하였는지 상태 값만 출력해본다.
+    ```
+- 결과는 200이 페이지수 만큼 출력되면 정상작동 한 것이고, 이후 작업은 다음 강의에서 진행
+
+#### #2.6 Extracting Titles
