@@ -24,7 +24,9 @@ python start
 
 #### 2020.02.16: #2-4
 
-#### 2020.02.19: #2-5
+#### 2020.02.19: #2-5 ~ #2-6
+
+#### 2020.02.20: #2-7
 
 # Concept
 
@@ -380,3 +382,84 @@ python start
 - 결과는 200이 페이지수 만큼 출력되면 정상작동 한 것이고, 이후 작업은 다음 강의에서 진행
 
 #### #2.6 Extracting Titles
+
+- 목표
+  - Indeed 공고글의 title 가져오기
+- URL을 동적으로 받아 soup를 만듦
+
+```python
+  for page in range(last_page):
+    result = requests.get(f"{URL}&start={page*LIMIT}")
+    soup = BeautifulSoup(result.text, "html.parser")
+```
+
+- find, find_all
+  - find_all은 해당 조건의 태그를 모두 가져오는 것
+  - find는 해당 조건의 태그 하나만 가져오는 것. 2개 이상일 시 가장 위에 것 1개
+- find, find_all 조건 작성(둘 다 조건 거는 것은 같다)
+
+  - find("태그명", {"속성":"속성값"})
+  - find("태그명")["속성"]
+
+  ```python
+    results = soup.find_all("div",{"class":"jobsearch-SerpJobCard"}) #class명이 jobsearch-SerpJobCard인 div 태그를 모두 가져온다.
+
+    .
+    .
+    .
+
+    title = result.find("div",{"class":"title"}) #class명이 title인 div tag 1개를 가져온다.
+    anchor_title = title.find("a")["title"] #title의 첫번쨰 a태그에서 title 값을 가져온다.
+  ```
+
+- find_all, find, for문을 이용해서 페이지별 채용공고글 제목을 출력한다.
+
+  ```python
+    def extract_indeed_jobs(last_page):
+    jobs = []
+
+    for page in range(last_page):
+      result = requests.get(f"{URL}&start={page*LIMIT}")
+      soup = BeautifulSoup(result.text, "html.parser")
+      results = soup.find_all("div",{"class":"jobsearch-SerpJobCard"})
+      for result in results:
+        title = result.find("div",{"class":"title"}).find("a")["title"]
+        print(title)
+
+    return jobs
+  ```
+
+  - 의문점
+    - 데이터는 잘 나오는데 실제 화면과 비교 시 데이터 누락이 많음
+
+#### #2.7 Extracting Companies
+
+- 뜬금없지만 BeautifulSoup, soup 모두 많은 것들을 담는다는 뜻으로 쓰는듯. like 김치찌개
+- 목표
+  - Indeed 채용 공고의 회사명 출력
+  - .strip()으로 공백 지우기
+  - if, else문 활용
+- 회사명은 class명이 company인 span에 들어있다.
+
+  - 이 때 span에 회사명이 a tag에 들어 있는 것이있고, a tag 없이 text만 있는 것이 있다.
+  - 따라서 find("span",{"class":"company"}).find("a").string을 했을 때 None 데이터가 나올 수 있음
+  - if, else 활용
+    - 결과값을 str 형변환 해서 변수에 넣어줌
+
+  ```python
+    company = result.find("span", {"class": "company"})
+    company_anchor = company.find("a")
+
+    if company_anchor is not None:
+      company = str(company_anchor.string)
+    else:
+      company = str(company.string)
+  ```
+
+- 회사명에 공백이 많으므로 공백 제거
+  - trim() 같은 역할을 파이썬에서는 .strip() 함수가 함
+    - str.strip() 시 str 양쪽 공백이 지워짐
+    - .strip("F") 하면 str 내부의 F가 지워짐
+    ```python
+      company = company.strip()
+    ```
