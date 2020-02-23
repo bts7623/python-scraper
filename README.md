@@ -28,6 +28,8 @@ python start
 
 #### 2020.02.20: #2-7
 
+#### 2020.02.23: #2-8
+
 # Concept
 
 #### #0-0 ~ 0-4 Introduction
@@ -463,3 +465,64 @@ python start
     ```python
       company = company.strip()
     ```
+
+#### #2.8 Extracting Locations and Finishing up
+
+- 목표
+  - extract_indeed_jobs에서 extract_indeed_job 분리
+  - 공고문에서 위치 수집
+  - 공고문에서 지원 링크로 넘기는 link_id 수집
+- title, company, location을 추출하고 함수를 정리해서 데이터를 return 받도록 한다.
+
+  - title: div.title > a tag의 title property에 있다.
+  - company: span.company에 들어있는데 anchor tag가 있는 것도 있고 없는 것도 있다.
+    - if문을 통해 span.company > anchor가 None type이면 span.company.string return
+    - anchor가 있으면 span.company.find("a").string
+  - location: div.recJobLoc의 data-rc-loc property
+  - link_id: 현재 기본적으로 구인 공고의 카드 div를 html로 받아오는데, 해당 html의 data-jk property
+  - 데이터는 dictionary type으로 return
+
+  ```python
+    def extract_indeed_job(html):
+      title = html.find("div",{"class":"title"}).find("a")["title"]
+
+      company = html.find("span",{"class":"company"})
+      company_anchor = company.find("a")
+      if company_anchor is not None:
+        company = company_anchor.string
+      else:
+        company = company.string
+
+      location = html.find("div",{"class":"recJobLoc"})["data-rc-loc"]
+  ```
+
+
+      data_id = html["data-jk"]
+      link = f"https://kr.indeed.com/viewjob?jk={data_id}"
+
+      return {"title":title,"company":company,"location":location,"link",link}
+
+````
+
+- return 받은 데이터를 모든 페이지에서 추출
+
+```python
+  def extract_indeed_jobs(last_page):
+    jobs = []
+
+    for page in range(last_page):
+      print(f"This page is {page}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") #동작 테스트용 print
+      result = requests.get(f"{URL}&start={page*LIMIT}")
+      soup = BeautifulSoup(result.text, "html.parser")
+      results = soup.find_all("div",{"class":"jobsearch-SerpJobCard"})
+      for result in results:
+        jobs.append(extract_indeed_job(result))
+
+    return jobs
+````
+
+#### #2.9 StackOverflow Pages
+
+- Indeen는 #2.8로 끝이다. main.py에 있는 로직을 indeed.py로 옮겨준다.
+- 목표
+  - stackOverFlow pagination 추출
