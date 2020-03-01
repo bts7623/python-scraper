@@ -30,6 +30,8 @@ python start
 
 #### 2020.02.23: #2-8
 
+#### 2020.02.29: #2-9 ~ #2-14
+
 # Concept
 
 #### #0-0 ~ 0-4 Introduction
@@ -482,47 +484,192 @@ python start
   - link_id: 현재 기본적으로 구인 공고의 카드 div를 html로 받아오는데, 해당 html의 data-jk property
   - 데이터는 dictionary type으로 return
 
+- return 받은 데이터를 모든 페이지에서 추출
+
   ```python
+    # indeed.py
+    import requests
+    from bs4 import BeautifulSoup
+
+    LIMIT = 50
+    URL = f"https://kr.indeed.com/jobs?q=python&limit={LIMIT}"
+
+    def extract_indeed_pages():
+      resul = requests.get(URL)
+      soup = BeautifulSoup(resul.text, "html.parser")
+
+      pagination = soup.find("div", {"class":"pagination"})
+
+      links = pagination.find_all("a")
+      pages = []
+      for page in links[:-1]:
+        pages.append(int(page.find("span").string))
+
+      max_val = max(pages)
+
+      return max_val
+
     def extract_indeed_job(html):
       title = html.find("div",{"class":"title"}).find("a")["title"]
 
       company = html.find("span",{"class":"company"})
       company_anchor = company.find("a")
-      if company_anchor is not None:
-        company = company_anchor.string
+      if company:
+        if company_anchor is not None:
+          company = company_anchor.string
+        else:
+          company = company.string
+        location = html.find("div",{"class":"recJobLoc"})["data-rc-loc"]
       else:
-        company = company.string
-
-      location = html.find("div",{"class":"recJobLoc"})["data-rc-loc"]
-  ```
-
+        company = None
 
       data_id = html["data-jk"]
       link = f"https://kr.indeed.com/viewjob?jk={data_id}"
 
-      return {"title":title,"company":company,"location":location,"link",link}
+      return {"title":title,"company":company,"location":location, "link":link}
 
-````
+    def extract_indeed_jobs(last_page):
+      jobs = []
 
-- return 받은 데이터를 모든 페이지에서 추출
+      for page in range(last_page):
+        print(f"Scrapping Indeed page: {page}")
+        result = requests.get(f"{URL}&start={page*LIMIT}")
+        soup = BeautifulSoup(result.text, "html.parser")
+        results = soup.find_all("div",{"class":"jobsearch-SerpJobCard"})
+        for result in results:
+          jobs.append(extract_indeed_job(result))
 
-```python
-  def extract_indeed_jobs(last_page):
-    jobs = []
+      return jobs
 
-    for page in range(last_page):
-      print(f"This page is {page}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") #동작 테스트용 print
-      result = requests.get(f"{URL}&start={page*LIMIT}")
-      soup = BeautifulSoup(result.text, "html.parser")
-      results = soup.find_all("div",{"class":"jobsearch-SerpJobCard"})
-      for result in results:
-        jobs.append(extract_indeed_job(result))
-
-    return jobs
-````
+    def get_jobs():
+      last_page = extract_indeed_pages()
+      jobs = extract_indeed_jobs(last_page)
+      return jobs
+  ```
 
 #### #2.9 StackOverflow Pages
 
-- Indeen는 #2.8로 끝이다. main.py에 있는 로직을 indeed.py로 옮겨준다.
+- Indeed는 #2.8로 끝이다. main.py에 있는 로직을 indeed.py로 옮겨준다.
+- StackOverflow는 데이터에 국가 컬럼이 있는지 몰라도 데이터 추출 시 전 세계 게시글, 페이지가 추출되는 것 같다.
+- 내 화면에는 python 검색 시 12페이지인데 soup에 추출되는 페이지는 172이고 게시글에도 각지 언어로 되어있는 것을 보면 그렇다.
 - 목표
-  - stackOverFlow pagination 추출
+- stackOverFlow pagination 추출
+
+#### #2.10 StackOverflow extract_jobs
+
+- 목표
+- StackOverflow에서 직업 id 가져오기 > extract_jobs
+- .string, .get_text()
+- string의 경우 해당 태그의 text가 단일할 경우 해당 값을 return해줌
+  - 자식 태그가 있으면 자식 태그가 1개이고 그 태그에 text가 1개일 경우에만 return하고 그 외는 에러
+- .get_text()는 공백을 포함한 1개 이상의 모든 text를 return 해주는 것 같음(\n같은 것도 반환함)
+  - 해당 데이터의 공백 제거를 위해 strip을 할 경우 .get_text(strip=True)라고 쓰면 된다.
+- 아래와 같은 구문은 작동하질 않음.
+
+```python
+  results = soup.find_all("div",{"class":"-job"})["data-jobid"]
+```
+
+- find_all 한 것이 배열로 담기고 그것을 for문으로 풀면서 거기에다가 ["data-jobid"]값을 추출해야함
+
+#### #2.11 StackOverflow extract_job
+
+- 목표
+  - 공고의 직업, 회사명 return
+  - unpacking value : 해당 요소의 개수를 알 때 다중 변수명으로 바로 할당 받는 것
+  - recursive = False: 추출 요소를 깊게 탐색하지 않고 한단계만 탐색하기
+- ~~공고글 card에서 직업 title을 가져오는 것인데, stackoverflow에서 막았는지 잘 추출되지 않아서 강의만 듣기로함.~~
+- html을 읽어 본 결과 grid class를 가진 div가 상단에 하나 있어서 find할 시 그것만 가져와서 오류처럼 느껴졌었음.
+  - 결과적으로 우리가 필요로하는 데이터는 div.grid 자식 요소였는데 접근할 방법을 몰랐음.
+  - div.grid 자식 요소의 유일한 자식인 div.grid--cell.fl1 > a.s-link에 있는 것을 보고 div.grid를 건너뛰고 추출함
+  ```python
+    def extract_so_job(html):
+      title = html.find("a",{"class":"s-link"})["title"]
+      print(title)
+  ```
+- 회사와 지역은 한 tag 아래 2개의 span에 각각 있었고, 강의영상에서는 회사 span 안에 여러 깊이의 span이 있었다.
+  - 그래서 니코는 recursive=False라는 추출 Depth를 1로 하는 설정을 하였는데, 내가 보고있는 데이터는 span 하위에 더 이상 span이 없었기 때문에 쓰나 안쓰나 데이터는 비슷했지만 넣어주었다.
+  - unpacking value는 h3 tag 하위에 2개의 span에 각각 company, location이 담겨있음을 알고 있으면
+    - company_row[0], company_row[1] 이런 식으로 구분해서 print할 수 있다.
+    - 또한 company_row로 받지 말고 애초에 company, location = 데이터 이런 식으로 하면 각각 나뉘어서 변수에 담긴다.
+    - 받은 데이터는 get_text(strip=true)로 공백을 제거한 데이터만 받는다.
+    ```python
+      def extract_so_job(html):
+        title = html.find("a",{"class":"s-link"})["title"]
+        company, location = html.find("h3").find_all("span", recursive=False)
+        print(company.get_text(strip=True), location.get_text(strip=True))
+    ```
+
+#### #2.12 StackOverflow extract_job part Two
+
+- 목표
+  - 불필요한 문자, 공백을 제거한 company, location 가져오기
+- 나의 경우는 해당 사항이 없어 불필요하지만 내용 정리
+  - .get_Text(strip=True).strip("-").strip("\n").strip("\r")
+  - \n, \r 을 제거해줌
+
+#### #2.13 StackOverflow finish
+
+- 목표
+
+  - 해당 공고 링크 추출(apply_link)
+  - Indeed와 StackOverflow 추출 데이터 return
+
+  ```python
+      # so,py
+      import requests
+      from bs4 import BeautifulSoup
+
+      URL = f"https://stackoverflow.com/jobs?q=python&sort=i"
+
+      def extract_last_page(): # 마지막 페이지 수 찾기
+        result = requests.get(URL)
+        soup = BeautifulSoup(result.text, "html.parser")
+        pagination = soup.find("div",{"class":"s-pagination"})
+        pages = pagination.find_all("a")
+        last_page = pages[-2].get_text(strip=True) #-1은 next고 -2는 마지막 page를 return함
+        return int(last_page)
+
+      def extract_so_jobs(last_page): # 직업 추출 * 페이지 수
+        jobs = []
+        for page in range(last_page):
+          print(f"Scrapping SO page: {page}")
+          result = requests.get(f"{URL}&pg={page+1}")
+          soup = BeautifulSoup(result.text, "html.parser") # 공고글 card div를 가져온
+          results = soup.find_all("div",{"class":"-job"})
+          for result in results:
+            job = extract_so_job(result)
+            jobs.append(job)
+        return jobs
+
+      def extract_so_job(html):
+        title = html.find("a",{"class":"s-link"})["title"]
+        company, location = html.find("h3").find_all("span", recursive=False)
+        company = company.get_text(strip=True)
+        location = location.get_text(strip=True)
+        url_id = html["data-jobid"]
+        apply_link = f"https://stackoverflow.com/jobs/{url_id}"
+        return {'title':title, 'company':company, 'location':location, 'apply_link':apply_link}
+
+      def get_so_jobs():
+        last_page = extract_last_page()
+        jobs = extract_so_jobs(last_page)
+        return jobs
+  ```
+
+#### #2.14 What is CSV
+
+- 목표
+  - excel, 구글 드라이브 등으로 변환할 수 있는 CSV로 데이터 담기
+- CSV
+  - Comma Separated Values: 쉼표로 구분된 값
+  - 단순하게 라인이 다르면 row가 다르고
+  - 콤마로 다뒤면 column으로 나눈다.
+  - .CSV로 저장해서 엑셀로도 열고(콤마 구분) Preview로도 볼 수 있다.
+
+#### #2.15 Saving to CSV
+
+- 목표
+  - python open function을 이용해서 csv 파일 만들기
+  - open function의 mode property 알기
+  - csv library import하고 csv 파일에 데이터 작성하기
