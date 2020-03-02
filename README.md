@@ -30,7 +30,9 @@ python start
 
 #### 2020.02.23: #2-8
 
-#### 2020.02.29: #2-9 ~ #2-14
+#### 2020.03.01: #2-9 ~ #2-14
+
+#### 2020.03.02: #2-15 ~ #2-16
 
 # Concept
 
@@ -673,3 +675,36 @@ python start
   - python open function을 이용해서 csv 파일 만들기
   - open function의 mode property 알기
   - csv library import하고 csv 파일에 데이터 작성하기
+  - dict_values로 데이터 출력하고 list type으로 형변환하기
+- python open function
+  - 해당 파일을 열고, 없으면 생성해주는 기능
+  - 이 때 mode="w"를 해줘야 작성할 수 있다. (mode에 대한 공부 필요)
+  - open function을 통해 생성한 파일을 변수에 담아준다.
+    ```python
+      file = open("jobs.csv", mode="w")
+    ```
+  - 해당 jobs.csv를 수정한 뒤 다시 같은 open 로직을 돌리면 해당 파일은 기존 데이터를 날리고 초기화된다.
+- csv 를 import 해준다.
+  - library 안의 writer를 이용해서 데이터를 넣어줄 수 있다.
+  - csv.writer(file)를 변수에 담고 .writerow를 통해 데이터를 넣어줄 수 있다.
+- 데이터는 배열형태로 넣어준다. write.writerow(["title", "company", "location", "link"])
+  - get_jobs를 통해 return 받은 데이터는 dictionary type의 데이터를 갖고 있다.
+    - {'title':title, 'company':company, 'location', location, 'link', link}
+    - dict type은 따로 dict.title() 이런식으로 데이터를 하나하나 꺼내지 않고 dict.values() 라는 기능을 써서 알아서 출력이 가능하다.
+- dict type으로 가져온 데이터를 list type으로 형변환해서 writerow 해준다.
+
+```python
+  import csv
+
+  def save_to_file(jobs):
+    file = open("jobs.csv",mode="w")
+    writer = csv.writer(file)
+    writer.writerow(["title", "company", "location", "link"])
+    for job in jobs:
+      writer.writerow(list(job.values()))
+    return
+```
+
+#### #2.16 OMG This is Awesome
+
+- google docs, spreadsheets에서 가져오기(import) > 업로드 통해 csv 파일 올리고 콤마로 구분하면 awesome한 excel file로 바뀜
