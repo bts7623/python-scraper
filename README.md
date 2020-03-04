@@ -34,6 +34,10 @@ python start
 
 #### 2020.03.02: #2-15 ~ #2-16
 
+#### 2020.03.03: #3-0
+
+#### 2020.03.04: #3-1 ~ #3-3
+
 # Concept
 
 #### #0-0 ~ 0-4 Introduction
@@ -708,3 +712,78 @@ python start
 #### #2.16 OMG This is Awesome
 
 - google docs, spreadsheets에서 가져오기(import) > 업로드 통해 csv 파일 올리고 콤마로 구분하면 awesome한 excel file로 바뀜
+
+---
+
+#### #3-0 Django is AWESOME
+
+#### #3-1 \*args \*\*kwargs
+
+- 목표
+  - positional argument, keyword argument 알기
+- Pyhton에는 변수를 무한대로 받을 수 있다.
+  - print(a,s,d,v,d,df,a,2,3,45,5,) > 이렇게 써도 다 console에 출력된다.
+  - 이런경우 함수 정의에 변수를 def print(\*args): 이렇게 넣어주면 된다.
+- \*args, \*\*kwargs
+
+  - args는 positional argument로 일반적으로 순차적으로 들어오는 변수이다.
+    - print(1,2,3,4,x,y,z,True)
+    - 이 때 파라미터들은 Tuple type으로 받아진다. (a, b, c, d ...)
+  - kargs는 keyword argument로 파라미터의 변수명을 지정해서 넣는 것으로 함수에서 순서 상관없이 key 값을 매핑해서 받아들인다.
+    - print(name="bts", age=17, flag=True)
+    - 이 때 파라미터들은 dictionary type으로 받아진다. {ddd:ddd, aasd:vsfvsd,}
+
+  ```python
+    args_print(1, 2, 0,3, 4, "asd", True)
+    kwargs_print(name="bts", age=12, flag=True)
+
+    # 자료구조 Tuple Type > (1, 2, 0, 3, 4, 'asd', True)
+    # 자료구조 Dictionary Type > {'name': 'bts', 'age': 12, 'flag': True}
+  ```
+
+#### #3-2 Intro to Object Oriented Programming
+
+- 목표
+  - 객체지향 프로그래밍
+- blueprint : 설계도 > class를 비유
+- instance : 설계도로 만든 살아있는 결과물이라 비유
+- class
+
+  - 함수와 같이 들여쓰기로 선언
+
+  ```python
+    class Car():
+      wheels = 4
+      doors = 4
+      windows = 4
+
+    porche = Car()
+  ```
+
+  - class는 snake 표기법을 쓰는건지 앞글자만 대문자를 쓴느건지는 좀 더 봐야겠음
+  - class car에 없는 color를 바로 porche.color = yellow 이런식으로 설정했는데 뒤에 배울듯.
+  - porche - Car() 라고했을 때의 porche를 Car라는 설계도(class)로 만든 결과물(instance)라고 표현함
+  - 이렇게 class명에 괄호를 써서 instance를 생성사는 과정을 instantiation이라고 한다고 함
+
+#### #3.3 Methods part One
+
+- 목표
+  - Method
+- Method
+  - python에서는 class안에서의 function이 method이다.
+  - ~~method는 1개의 argument가 꼭 있어야하고 첫 argument는 해당 instance이다.~~
+    - ~~왠지 개념이 super였나 자신을 객체로 쓰는 그런 것 같음~~
+  - ~~따라서 method에 변수를 하나 꼭 써줘야한다.~~
+    - ~~보통 self를 쓰지만 변수명은 상관이 없다.~~
+  - ~~Car에 없는 변수를 그냥 선언해도 된다.~~
+    - ~~car.color = red 등이 바로 된다.~~
+    - ~~약간 VO객체 느낌인가?~~
+  - VO느낌이 맞는 것 같다.
+    - person.name() 이라고할 때 name이라는 method는 기본적으로 instance인 person을 매개변수로 가져간다.
+    - person 내의 method는 기본적으로 def name(self): 로 적여있어야한다. self는 변수명으로 다른 것을 넣어도 되지만 기본적으로 self이다.
+      - VO객체 만들 때 super를 super라고 임의적으로 명시하는 것과 같은 개념이다.
+  - def print(self, message): 가 있다고 보자.
+    - 이 때 첫번째 argument인 self에는 무조건 instance가 들어간다고 보면된다.
+    - person.print("Hello World!") 이렇게 argument를 하나만 써도 self에는 intance가 들어가고 message에 "Hello world"가 들어가서 작동을 한다.
+
+#### #3.4 Methods part Two
