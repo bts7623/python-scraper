@@ -38,6 +38,8 @@ python start
 
 #### 2020.03.04: #3-1 ~ #3-3
 
+#### 2020.03.05: #3-4 ~ #3-6
+
 # Concept
 
 #### #0-0 ~ 0-4 Introduction
@@ -787,3 +789,100 @@ python start
     - person.print("Hello World!") 이렇게 argument를 하나만 써도 self에는 intance가 들어가고 message에 "Hello world"가 들어가서 작동을 한다.
 
 #### #3.4 Methods part Two
+
+- 목표
+  - class의 내장 함수
+  - 내장 함수 Override
+  - \_\_str\_\_, \_\_init\_\_
+- class를 print(dif(class명))으로 출력하면 해당 class가 가지공 있는 모든 method들과 변수들을 볼 수 있다.
+  - class에서 기본적으로 제공하는 method들이 출력되는데 여기서 크게 2가지를 알아보고 Override 해보았다.
+- \_\_str\_\_
+
+  - print(class명)을 하면 python은 사용자가 String으로 객체를 보고싶어한다 판단하여 instance를 string으로 바꿔주는데, 이 때 string으로 바꿔주는 함수가 \_\_str\_\_이다.
+
+    - 이 함수를 Override를 하면 print(class명) 값을 정할 수 있다.
+
+- \_\_init\_\_
+
+  - VO 생성자. class의 초기값을 세팅해주는 method
+
+    - str, init 모두 기본적으로 self를 argument로 갖고 있어야한다.
+    - init은 self, \*args, \*\*kwargs 3개의 argument를 갖고 있다.
+    - self는 필수이고 필요한 값들을 끌어다가 채운다.
+    - kwargs.get(key, default)로 값을 설정할 수 있다.
+      - 해당 argument를 인자로 받으면 그 값을 넣고 없으면 default 값을 넣음
+
+    ```python
+      class Car():
+        def __init__(self, **kwargs):
+          self.wheels = 4
+          self.doors = 4
+          self.color = kwargs.get("color", "black")
+          self.price = kwargs.get("price", "40,000,000원")
+
+        def __str__(self):
+          return f"wheels: {self.wheels}, doors: {self.doors}, color: {self.color}, price: {self.price}"
+
+      kia = Car(color = "red", price = "36,000,000원")
+
+      print(kia);
+
+      '''
+        wheels: 4, doors: 4, color: red, price: 36,000,000원
+      '''
+
+    ```
+
+  - 주석
+    - 한줄 주석 #
+    - 여러줄 주석 작은따옴표 혹은 큰따옴표 3개씩으로 감싸기 """, '''
+
+#### #3-5 Extending Classes
+
+- 목표
+  - 상속(Inheritance), 확장 (Extend)
+  - 부모 method Override
+  - 부모 method 상속
+- python의 class 상속은 자식 class의 argument에 부모 class를 넣어주면 된다.
+  - class Convertible(Car): 이런식으로 상속한다.
+- 부모 method Override
+  - 자식 class에서 부모 method를 그대로 재정의하면 된다.
+- 부모 method 상속
+
+  - \_\_init\_\_ method를 그대로 가져오고 새로운 변수를 추가하고자 할 때
+  - super method가 부모 method를 가져온다.
+    - super().\_\_init\_\_(\*\*kwargs)를 추가해주면 된다.
+      - 일단 super method에 \*\*args, \*\*kwargs를 받으려면 자식 class의 init method에도 argument로 적어줘야한다.
+    - 부모 init의 default 값을 쓰려면 별도의 argument 넣지 않고 super()/\_\_init\_\_() 으로만 호출해도 된다.
+  - super method 없이 새로운 변수만 추가하면 init 함수 전체가 재정의돼서 기존 값들을 잃는다.
+
+  ```python
+    class Car():
+      def __init__(self, **kwargs):
+        self.wheels = 4
+        self.doors = 4
+        self.color = kwargs.get("color", "black")
+        self.price = kwargs.get("price", "40,000,000원")
+
+      def __str__(self):
+        return f"wheels: {self.wheels}, doors: {self.doors}, color: {self.color}, price: {self.price}"
+
+    class SubCar(Car):
+      def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.size = "mini"
+
+      def __str__(self):
+        return f"exetened wheels: {self.wheels}, doors: {self.doors}, color: {self.color}, price: {self.price}, size: {self.size}"
+
+    kia = Car(color = "red", price = "36,000,000원")
+    toyota = SubCar(color= "yellow", price= "1￥")
+
+    print(toyota)
+
+    # exetened wheels: 4, doors: 4, color: yellow, price: 1￥, size: mini
+  ```
+
+#### #3-6 Whats Next
+
+- AirBnB를 들어라
